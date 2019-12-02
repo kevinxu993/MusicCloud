@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 @Repository
 public class SongDalImpl implements SongDal {
@@ -19,8 +20,23 @@ public class SongDalImpl implements SongDal {
 
 	@Override
 	public DbQueryStatus addSong(Song songToAdd) {
-		// TODO Auto-generated method stub
-		return null;
+		DbQueryStatus dbQueryStatus = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+		try {
+			if (StringUtils.isEmpty(songToAdd.getSongName())
+				|| StringUtils.isEmpty(songToAdd.getSongArtistFullName())
+				|| StringUtils.isEmpty(songToAdd.getSongAlbum())) {
+				dbQueryStatus.setMessage("ERROR_GENERIC");
+				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+				return dbQueryStatus;
+			}
+			Object obj = db.insert(songToAdd);
+			dbQueryStatus.setData(obj);
+		} catch (RuntimeException ex) {
+			dbQueryStatus.setMessage("ERROR_GENERIC");
+			dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+			ex.printStackTrace();
+		}
+		return dbQueryStatus;
 	}
 
 	@Override
