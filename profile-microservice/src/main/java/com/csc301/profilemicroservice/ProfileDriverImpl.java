@@ -11,6 +11,7 @@ import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 import org.neo4j.driver.v1.Transaction;
 
 @Repository
@@ -40,8 +41,39 @@ public class ProfileDriverImpl implements ProfileDriver {
 	
 	@Override
 	public DbQueryStatus createUserProfile(String userName, String fullName, String password) {
-		
-		return null;
+		String queryStr;
+		Session session = null;
+		DbQueryStatus dbQueryStatus = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+		try {
+			if (StringUtils.isEmpty(userName) || StringUtils.isEmpty(fullName) || StringUtils.isEmpty(password)) {
+				dbQueryStatus.setMessage("ERROR_GENERIC");
+				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+				return dbQueryStatus;
+			}
+			String listName = userName + "-favorites";
+			session = ProfileMicroserviceApplication.driver.session();
+			Transaction trans = session.beginTransaction();
+			queryStr = "CREATE (nProfile:profile{userName:'" + userName + "',fullName:'" +fullName+ "',password:'" + password + "'}) return nProfile;";
+			trans.run(queryStr);
+
+			queryStr = "CREATE (nPlaylist:playlist{plName:'" + listName + "'}) return nPlaylist;";
+			trans.run(queryStr);
+
+			queryStr = "MATCH (nProfile:profile{userName:'" + userName + "'}),(nPlaylist:playlist{plName:'" + listName + "'}) CREATE (nProfile)-[r:created]->(nPlaylist) return r;";
+			trans.run(queryStr);
+
+			trans.success();
+
+		} catch (Exception ex) {
+			dbQueryStatus.setMessage("ERROR_GENERIC");
+			dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+			ex.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+		return dbQueryStatus;
 	}
 
 	@Override
