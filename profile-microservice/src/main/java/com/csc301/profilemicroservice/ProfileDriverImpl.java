@@ -11,6 +11,7 @@ import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 import org.neo4j.driver.v1.Transaction;
 
 @Repository
@@ -46,8 +47,33 @@ public class ProfileDriverImpl implements ProfileDriver {
 
 	@Override
 	public DbQueryStatus followFriend(String userName, String frndUserName) {
-		
-		return null;
+		String queryStr;
+		Session session = null;
+		DbQueryStatus dbQueryStatus = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+		try {
+
+			if (StringUtils.isEmpty(userName) || StringUtils.isEmpty(frndUserName)) {
+				dbQueryStatus.setMessage("ERROR_GENERIC");
+				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+				return dbQueryStatus;
+			}
+
+			session = ProfileMicroserviceApplication.driver.session();
+			Transaction trans = session.beginTransaction();
+			queryStr = "MATCH (nProfile:profile{userName:'" + userName + "'}),(mProfile:profile{userName:'" + frndUserName + "'}) CREATE (nProfile)-[r:follows]->(mProfile) return r;";
+			trans.run(queryStr);
+			trans.success();
+			dbQueryStatus.setMessage("User " + userName + "successfully follows User" + frndUserName);
+		} catch (Exception ex) {
+			dbQueryStatus.setMessage("ERROR_GENERIC");
+			dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+			ex.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+		return dbQueryStatus;
 	}
 
 	@Override
