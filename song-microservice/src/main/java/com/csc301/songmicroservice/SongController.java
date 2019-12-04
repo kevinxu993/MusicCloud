@@ -103,7 +103,15 @@ public class SongController {
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("data", String.format("PUT %s", Utils.getUrl(request)));
 
-		DbQueryStatus dbQueryStatus = songDal.updateSongFavouritesCount(songId, "true".equals(shouldDecrement));
+		DbQueryStatus dbQueryStatus;
+		if (shouldDecrement.equals("true")) {
+			dbQueryStatus = songDal.updateSongFavouritesCount(songId, true);
+		} else if (shouldDecrement.equals("false")) {
+			dbQueryStatus = songDal.updateSongFavouritesCount(songId, false);
+		} else {
+			dbQueryStatus = new DbQueryStatus("Invalid input for shouldDecrement",
+					DbQueryExecResult.QUERY_ERROR_GENERIC);
+		}
 		response = Utils.setResponseStatus(response, dbQueryStatus.getdbQueryExecResult(), dbQueryStatus.getData());
 
 		return response;
