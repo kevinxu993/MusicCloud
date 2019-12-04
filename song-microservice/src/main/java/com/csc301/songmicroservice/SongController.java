@@ -36,7 +36,9 @@ public class SongController {
 		this.songDal = songDal;
 	}
 
-	
+	/*
+	*    /getSongById/{songId}  route has one endpoint, GET used to retrieve all the song information given the song
+     * */
 	@RequestMapping(value = "/getSongById/{songId}", method = RequestMethod.GET)
 	public @ResponseBody Map<String, Object> getSongById(@PathVariable("songId") String songId,
 			HttpServletRequest request) {
@@ -52,7 +54,10 @@ public class SongController {
 		return response;
 	}
 
-	
+
+    /*
+     *    /getSongTitleById/{songId}  route has one endpoint, GET used to retrieve the song title given the song
+     * */
 	@RequestMapping(value = "/getSongTitleById/{songId}", method = RequestMethod.GET)
 	public @ResponseBody Map<String, Object> getSongTitleById(@PathVariable("songId") String songId,
 			HttpServletRequest request) {
@@ -66,7 +71,10 @@ public class SongController {
 		return response;
 	}
 
-	
+
+    /*
+     *    /deleteSongById/{songId} route has one endpoint, DELETE used to delete the song from the MongoDB database
+     * */
 	@RequestMapping(value = "/deleteSongById/{songId}", method = RequestMethod.DELETE)
 	public @ResponseBody Map<String, Object> deleteSongById(@PathVariable("songId") String songId,
 			HttpServletRequest request) {
@@ -80,7 +88,10 @@ public class SongController {
 		return response;
 	}
 
-	
+
+    /*
+     *    /addSong route has one endpoint, POST used to add a Song to the Song database
+     * */
 	@RequestMapping(value = "/addSong", method = RequestMethod.POST)
 	public @ResponseBody Map<String, Object> addSong(@RequestParam Map<String, String> params,
 			HttpServletRequest request) {
@@ -98,7 +109,10 @@ public class SongController {
 		return response;
 	}
 
-	
+
+    /*
+     *    /updateSongFavouritesCount/{songId} route has one endpoint, PUT used to update the song’s favourites count
+     * */
 	@RequestMapping(value = "/updateSongFavouritesCount/{songId}", method = RequestMethod.PUT)
 	public @ResponseBody Map<String, Object> updateFavouritesCount(@PathVariable("songId") String songId,
 			@RequestParam("shouldDecrement") String shouldDecrement, HttpServletRequest request) {
