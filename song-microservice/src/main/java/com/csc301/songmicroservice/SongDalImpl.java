@@ -110,10 +110,17 @@ public class SongDalImpl implements SongDal {
 				return dbQueryStatus;
 			}
 
+			long amount = obj.getSongAmountFavourites();
 			if (shouldDecrement) {
-				obj.setSongAmountFavourites(obj.getSongAmountFavourites() - 1);
+				if (amount >= 1) {
+					obj.setSongAmountFavourites(amount - 1);
+				} else {
+					dbQueryStatus.setMessage("No negative favourities");
+					dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+					return dbQueryStatus;
+				}
 			} else {
-				obj.setSongAmountFavourites(obj.getSongAmountFavourites() + 1);
+				obj.setSongAmountFavourites(amount + 1);
 			}
 			obj = db.save(obj);
 //			dbQueryStatus.setData(obj);
