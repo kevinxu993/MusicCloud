@@ -53,13 +53,15 @@ public class ProfileDriverImpl implements ProfileDriver {
 			String listName = userName + "-favorites";
 			session = ProfileMicroserviceApplication.driver.session();
 			Transaction trans = session.beginTransaction();
-			queryStr = "CREATE (nProfile:profile{userName:'" + userName + "',fullName:'" +fullName+ "',password:'" + password + "'}) return nProfile;";
+			queryStr = "CREATE (nProfile:profile{userName:'" + userName + "',fullName:'" +fullName+
+					"',password:'" + password + "'}) return nProfile;";
 			trans.run(queryStr);
 
 			queryStr = "CREATE (nPlaylist:playlist{plName:'" + listName + "'}) return nPlaylist;";
 			trans.run(queryStr);
 
-			queryStr = "MATCH (nProfile:profile{userName:'" + userName + "'}),(nPlaylist:playlist{plName:'" + listName + "'}) CREATE (nProfile)-[r:created]->(nPlaylist) return r;";
+			queryStr = "MATCH (nProfile:profile{userName:'" + userName + "'}),(nPlaylist:playlist{plName:'"
+					+ listName + "'}) CREATE (nProfile)-[r:created]->(nPlaylist) return r;";
 			trans.run(queryStr);
 
 			trans.success();
