@@ -47,7 +47,7 @@ public class ProfileController {
 	}
 
 	@RequestMapping(value = "/profile", method = RequestMethod.POST)
-	public @ResponseBody Map<String, Object> addSong(@RequestParam Map<String, String> params,
+	public @ResponseBody Map<String, Object> profile(@RequestParam Map<String, String> params,
 			HttpServletRequest request) {
 
 		Map<String, Object> response = new HashMap<String, Object>();
