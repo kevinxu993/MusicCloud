@@ -42,7 +42,7 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 			session = ProfileMicroserviceApplication.driver.session();
 			Transaction trans = session.beginTransaction();
 			queryStr = "MATCH (nPlaylist:playlist{plName:'" + listName + "'}),(nSong:song{songID:'" + songId + "'}) " +
-					"CREATE (nPlaylist)-[rela:includes]->(nSong) RETURN rela";
+					"MERGE (nPlaylist)-[rela:includes]->(nSong) RETURN rela";
 			trans.run(queryStr);
 			trans.success();
 			dbQueryStatus.setMessage("User " + userName + "successfully liked the Song");
