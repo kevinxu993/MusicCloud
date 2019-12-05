@@ -82,7 +82,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 					+ frndUserName + "'}) CREATE (nProfile)-[rela:follows]->(mProfile) return rela;";
 			trans.run(queryStr);
 			trans.success();
-			dbQueryStatus.setMessage("User " + userName + "successfully follows User" + frndUserName);
+			dbQueryStatus.setMessage("User " + userName + " successfully follows User " + frndUserName);
 		} catch (Exception ex) {
 			dbQueryStatus.setMessage("ERROR_GENERIC");
 			dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
