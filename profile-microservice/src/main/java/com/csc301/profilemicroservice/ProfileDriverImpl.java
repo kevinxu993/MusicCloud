@@ -137,6 +137,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 			}
 		}
 		return dbQueryStatus;
+	}
 
 	@Override
 	public DbQueryStatus unfollowFriend(String userName, String frndUserName) {
