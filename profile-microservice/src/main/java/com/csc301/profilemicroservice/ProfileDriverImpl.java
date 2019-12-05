@@ -103,6 +103,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 			trans.run(queryStr);
 			trans.success();
 			dbQueryStatus.setMessage("User " + userName + "successfully gets all song liked by friends of " + userName);
+			// dbQueryStatus.setData(obj.getSongName());
 		} catch (Exception ex) {
 			dbQueryStatus.setMessage("ERROR_GENERIC");
 			dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
