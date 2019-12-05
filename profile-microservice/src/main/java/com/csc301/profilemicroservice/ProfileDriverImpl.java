@@ -72,7 +72,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 			queryStr = "MATCH (nProfile:profile) WHERE nProfile.userName='" + userName +"' return nProfile.userName;";
 			StatementResult sr = trans.run(queryStr);
 			if ( ! sr.hasNext()) {
-				dbQueryStatus.setMessage("User " + userName + " NOT EXIST!");
+				dbQueryStatus.setMessage("User " + userName + " DOES NOT EXIST!");
 				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 				return dbQueryStatus;
 			}
@@ -81,7 +81,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 			queryStr = "MATCH (nProfile:profile) WHERE nProfile.userName='" + frndUserName +"' return nProfile.userName;";
 			sr = trans.run(queryStr);
 			if ( ! sr.hasNext()) {
-				dbQueryStatus.setMessage("User " + frndUserName + " NOT EXIST!");
+				dbQueryStatus.setMessage("User " + frndUserName + " DOES NOT EXIST!");
 				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 				return dbQueryStatus;
 			}
@@ -90,7 +90,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 			queryStr = "MATCH (nProfile),(mProfile) WHERE nProfile.userName='" + userName + "' AND mProfile.userName='" + frndUserName + "' MATCH (nProfile)-[r:follows]-(mProfile) return r";
 			sr = trans.run(queryStr);
 			if ( ! sr.hasNext()) {
-				dbQueryStatus.setMessage("User " + frndUserName + " already not followed user " + frndUserName);
+				dbQueryStatus.setMessage("User " + frndUserName + " already unfollowed user " + frndUserName);
 				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
 				return dbQueryStatus;
 			}

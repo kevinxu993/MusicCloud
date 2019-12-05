@@ -2,6 +2,7 @@ package com.csc301.profilemicroservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -85,6 +86,10 @@ public class ProfileController {
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
 
 		DbQueryStatus dbQueryStatus = profileDriver.unfollowFriend(userName, friendUserName);
+
+		if ( ! StringUtils.isEmpty(dbQueryStatus.getMessage())) {
+			response.put("message", dbQueryStatus.getMessage());
+		}
 		response = Utils.setResponseStatus(response, dbQueryStatus.getdbQueryExecResult(), dbQueryStatus.getData());
 
 		return response;
