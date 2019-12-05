@@ -67,7 +67,9 @@ public class ProfileDriverImpl implements ProfileDriver {
 
 			session = ProfileMicroserviceApplication.driver.session();
 			Transaction trans = session.beginTransaction();
-			queryStr = "MATCH (nProfile),(mProfile) WHERE nProfile.userName='" + userName + "' AND mProfile.userName='" + frndUserName + "' MATCH (nProfile)-[r:follows]-(mProfile) DELETE r";
+			queryStr = "MATCH (nProfile),(mProfile) WHERE nProfile.userName='" + userName +
+					"' AND mProfile.userName='" + frndUserName +
+					"' MATCH (nProfile)-[rela:follows]-(mProfile) DELETE rela";
 			trans.run(queryStr);
 			trans.success();
 			dbQueryStatus.setMessage("User " + userName + "successfully unfollowed User" + frndUserName);
@@ -85,7 +87,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 
 	@Override
 	public DbQueryStatus getAllSongFriendsLike(String userName) {
-			
+
 		return null;
 	}
 }
