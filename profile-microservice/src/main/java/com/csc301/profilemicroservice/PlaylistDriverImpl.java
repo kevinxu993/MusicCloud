@@ -5,6 +5,7 @@ import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
 import org.springframework.stereotype.Repository;
 import org.neo4j.driver.v1.Transaction;
+import org.springframework.util.StringUtils;
 
 @Repository
 public class PlaylistDriverImpl implements PlaylistDriver {
@@ -65,7 +66,34 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 
 	@Override
 	public DbQueryStatus deleteSongFromDb(String songId) {
-		
-		return null;
+		String queryStr;
+		Session session = null;
+		DbQueryStatus dbQueryStatus = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+		try {
+
+			if (StringUtils.isEmpty(songId)) {
+				dbQueryStatus.setMessage("ERROR_GENERIC");
+				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+				return dbQueryStatus;
+			}
+
+			session = ProfileMicroserviceApplication.driver.session();
+			Transaction trans = session.beginTransaction();
+			queryStr = "match (:playlist)-[rela:includes]->(nSong:song{songID:'"+ songId + "'}) delete rela, nSong";
+			trans.run(queryStr);
+			queryStr = "match (nSong:song{songID:'"+ songId + "'}) delete nSong";
+			trans.run(queryStr);
+			trans.success();
+			dbQueryStatus.setMessage("successfully deletes the Song");
+		} catch (Exception ex) {
+			dbQueryStatus.setMessage("ERROR_GENERIC");
+			dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+			ex.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+		return dbQueryStatus;
 	}
 }
