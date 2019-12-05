@@ -90,7 +90,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 			queryStr = "MATCH (nProfile),(mProfile) WHERE nProfile.userName='" + userName + "' AND mProfile.userName='" + frndUserName + "' MATCH (nProfile)-[r:follows]-(mProfile) return r";
 			sr = trans.run(queryStr);
 			if ( ! sr.hasNext()) {
-				dbQueryStatus.setMessage("User " + frndUserName + " already unfollowed user " + frndUserName);
+				dbQueryStatus.setMessage(userName + " and " + frndUserName + " are not friends");
 				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
 				return dbQueryStatus;
 			}
