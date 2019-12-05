@@ -67,6 +67,35 @@ public class ProfileDriverImpl implements ProfileDriver {
 
 			session = ProfileMicroserviceApplication.driver.session();
 			Transaction trans = session.beginTransaction();
+
+			// determine userName if it exists
+			queryStr = "MATCH (nProfile:profile) WHERE nProfile.userName='" + userName +"' return nProfile.userName;";
+			StatementResult sr = trans.run(queryStr);
+			if ( ! sr.hasNext()) {
+				dbQueryStatus.setMessage("User " + userName + " NOT EXIST!");
+				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+				return dbQueryStatus;
+			}
+
+			// determine frndUserName if it exists
+			queryStr = "MATCH (nProfile:profile) WHERE nProfile.userName='" + frndUserName +"' return nProfile.userName;";
+			sr = trans.run(queryStr);
+			if ( ! sr.hasNext()) {
+				dbQueryStatus.setMessage("User " + frndUserName + " NOT EXIST!");
+				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+				return dbQueryStatus;
+			}
+
+			// determine follow if it exists
+			queryStr = "MATCH (nProfile),(mProfile) WHERE nProfile.userName='" + userName + "' AND mProfile.userName='" + frndUserName + "' MATCH (nProfile)-[r:follows]-(mProfile) return r";
+			sr = trans.run(queryStr);
+			if ( ! sr.hasNext()) {
+				dbQueryStatus.setMessage("User " + frndUserName + " already not followed user " + frndUserName);
+				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+				return dbQueryStatus;
+			}
+
+
 			queryStr = "MATCH (nProfile),(mProfile) WHERE nProfile.userName='" + userName +
 					"' AND mProfile.userName='" + frndUserName +
 					"' MATCH (nProfile)-[rela:follows]-(mProfile) DELETE rela";
