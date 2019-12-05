@@ -179,7 +179,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 			sr = trans.run(queryStr);
 			if ( ! sr.hasNext()) {
 				dbQueryStatus.setMessage(userName + " and " + frndUserName + " are not friends");
-				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
 				return dbQueryStatus;
 			}
 
