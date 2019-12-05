@@ -104,6 +104,24 @@ public class ProfileDriverImpl implements ProfileDriver {
 
 			session = ProfileMicroserviceApplication.driver.session();
 			Transaction trans = session.beginTransaction();
+			// determine userName if it exists
+			queryStr = "MATCH (nProfile:profile) WHERE nProfile.userName='" + userName +"' return nProfile.userName;";
+			StatementResult sr = trans.run(queryStr);
+			if ( ! sr.hasNext()) {
+				dbQueryStatus.setMessage("User " + userName + " DOES NOT EXIST!");
+				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+				return dbQueryStatus;
+			}
+
+			// determine frndUserName if it exists
+			queryStr = "MATCH (nProfile:profile) WHERE nProfile.userName='" + frndUserName +"' return nProfile.userName;";
+			sr = trans.run(queryStr);
+			if ( ! sr.hasNext()) {
+				dbQueryStatus.setMessage("User " + frndUserName + " DOES NOT EXIST!");
+				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
+				return dbQueryStatus;
+			}
+
 			queryStr = "MATCH (nProfile:profile{userName:'" + userName + "'}),(mProfile:profile{userName:'"
 					+ frndUserName + "'}) CREATE (nProfile)-[rela:follows]->(mProfile) return rela;";
 			trans.run(queryStr);
