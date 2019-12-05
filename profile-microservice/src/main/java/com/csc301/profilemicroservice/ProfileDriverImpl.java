@@ -60,7 +60,8 @@ public class ProfileDriverImpl implements ProfileDriver {
 
 			session = ProfileMicroserviceApplication.driver.session();
 			Transaction trans = session.beginTransaction();
-			queryStr = "MATCH (nProfile:profile{userName:'" + userName + "'}),(mProfile:profile{userName:'" + frndUserName + "'}) CREATE (nProfile)-[r:follows]->(mProfile) return r;";
+			queryStr = "MATCH (nProfile:profile{userName:'" + userName + "'}),(mProfile:profile{userName:'"
+					+ frndUserName + "'}) CREATE (nProfile)-[rela:follows]->(mProfile) return rela;";
 			trans.run(queryStr);
 			trans.success();
 			dbQueryStatus.setMessage("User " + userName + "successfully follows User" + frndUserName);
