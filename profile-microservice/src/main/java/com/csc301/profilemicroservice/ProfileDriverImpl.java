@@ -57,8 +57,8 @@ public class ProfileDriverImpl implements ProfileDriver {
 			// determine userName if it exists
 			queryStr = "MATCH (nProfile:profile) WHERE nProfile.userName='" + userName +"' return nProfile.userName;";
 			StatementResult sr = trans.run(queryStr);
-			if ( sr.hasNext()) {
-				dbQueryStatus.setMessage("User " + userName + " already EXIST!");
+			if (sr.hasNext()) {
+				dbQueryStatus.setMessage("User " + userName + " already EXISTS!");
 				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
 				return dbQueryStatus;
 			}
