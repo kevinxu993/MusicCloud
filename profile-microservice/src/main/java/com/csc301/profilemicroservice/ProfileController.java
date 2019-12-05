@@ -103,6 +103,10 @@ public class ProfileController {
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
 
 		DbQueryStatus dbQueryStatus = profileDriver.unfollowFriend(userName, friendUserName);
+
+		if ( ! StringUtils.isEmpty(dbQueryStatus.getMessage())) {
+			response.put("message", dbQueryStatus.getMessage());
+		}
 		response = Utils.setResponseStatus(response, dbQueryStatus.getdbQueryExecResult(), dbQueryStatus.getData());
 
 		return response;
