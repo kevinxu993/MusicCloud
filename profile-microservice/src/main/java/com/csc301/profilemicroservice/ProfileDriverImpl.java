@@ -101,7 +101,7 @@ public class ProfileDriverImpl implements ProfileDriver {
 					"' MATCH (nProfile)-[rela:follows]-(mProfile) DELETE rela";
 			trans.run(queryStr);
 			trans.success();
-			dbQueryStatus.setMessage("User " + userName + "successfully unfollowed User" + frndUserName);
+			dbQueryStatus.setMessage("User " + userName + " successfully unfollowed User " + frndUserName);
 		} catch (Exception ex) {
 			dbQueryStatus.setMessage("ERROR_GENERIC");
 			dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
