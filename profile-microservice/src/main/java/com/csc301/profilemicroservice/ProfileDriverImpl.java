@@ -98,7 +98,8 @@ public class ProfileDriverImpl implements ProfileDriver {
 
 			session = ProfileMicroserviceApplication.driver.session();
 			Transaction trans = session.beginTransaction();
-			queryStr = "MATCH return rela;";
+			queryStr = "MATCH (:profile {userName: '" + userName + "'})-[:follows]->(:profile)-[:created]->" +
+					"(:playlist)-[:includes]->(song) RETURN song.songID as songID;";
 			trans.run(queryStr);
 			trans.success();
 			dbQueryStatus.setMessage("User " + userName + "successfully gets all song liked by friends of " + userName);
