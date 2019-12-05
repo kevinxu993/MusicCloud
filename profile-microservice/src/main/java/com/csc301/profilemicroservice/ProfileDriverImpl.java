@@ -53,9 +53,20 @@ public class ProfileDriverImpl implements ProfileDriver {
 			String listName = userName + "-favorites";
 			session = ProfileMicroserviceApplication.driver.session();
 			Transaction trans = session.beginTransaction();
+
+			// determine userName if it exists
+			queryStr = "MATCH (nProfile:profile) WHERE nProfile.userName='" + userName +"' return nProfile.userName;";
+			StatementResult sr = trans.run(queryStr);
+			if (sr.hasNext()) {
+				dbQueryStatus.setMessage("User " + userName + " already EXISTS!");
+				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+				return dbQueryStatus;
+			}
+
 			queryStr = "CREATE (nProfile:profile{userName:'" + userName + "',fullName:'" +fullName+
 					"',password:'" + password + "'}) return nProfile;";
 			trans.run(queryStr);
+
 
 			queryStr = "CREATE (nPlaylist:playlist{plName:'" + listName + "'}) return nPlaylist;";
 			trans.run(queryStr);
