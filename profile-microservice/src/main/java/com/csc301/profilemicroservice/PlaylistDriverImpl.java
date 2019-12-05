@@ -60,8 +60,35 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 
 	@Override
 	public DbQueryStatus unlikeSong(String userName, String songId) {
-		
-		return null;
+		String queryStr;
+		Session session = null;
+		DbQueryStatus dbQueryStatus = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+		try {
+
+			if (StringUtils.isEmpty(userName) || StringUtils.isEmpty(songId)) {
+				dbQueryStatus.setMessage("ERROR_GENERIC");
+				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+				return dbQueryStatus;
+			}
+
+			String listName = userName + "-favorites";
+			session = ProfileMicroserviceApplication.driver.session();
+			Transaction trans = session.beginTransaction();
+			queryStr = "MATCH (:playlist{plName:'" + listName + "'})-[rela:includes]->" +
+					"(:song{songID:'" + songId + "'}) DELETE rela";
+			trans.run(queryStr);
+			trans.success();
+			dbQueryStatus.setMessage("User " + userName + "successfully liked the Song");
+		} catch (Exception ex) {
+			dbQueryStatus.setMessage("ERROR_GENERIC");
+			dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+			ex.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+		return dbQueryStatus;
 	}
 
 	@Override
