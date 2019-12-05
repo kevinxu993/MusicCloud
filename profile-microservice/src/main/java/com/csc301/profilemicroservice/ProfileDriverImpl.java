@@ -80,8 +80,34 @@ public class ProfileDriverImpl implements ProfileDriver {
 
 	@Override
 	public DbQueryStatus followFriend(String userName, String frndUserName) {
-		
-		return null;
+		String queryStr;
+		Session session = null;
+		DbQueryStatus dbQueryStatus = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+		try {
+
+			if (StringUtils.isEmpty(userName) || StringUtils.isEmpty(frndUserName)) {
+				dbQueryStatus.setMessage("ERROR_GENERIC");
+				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+				return dbQueryStatus;
+			}
+
+			session = ProfileMicroserviceApplication.driver.session();
+			Transaction trans = session.beginTransaction();
+			queryStr = "MATCH (nProfile:profile{userName:'" + userName + "'}),(mProfile:profile{userName:'"
+					+ frndUserName + "'}) CREATE (nProfile)-[rela:follows]->(mProfile) return rela;";
+			trans.run(queryStr);
+			trans.success();
+			dbQueryStatus.setMessage("User " + userName + "successfully follows User" + frndUserName);
+		} catch (Exception ex) {
+			dbQueryStatus.setMessage("ERROR_GENERIC");
+			dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+			ex.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+		return dbQueryStatus;
 	}
 
 	@Override
@@ -120,7 +146,32 @@ public class ProfileDriverImpl implements ProfileDriver {
 
 	@Override
 	public DbQueryStatus getAllSongFriendsLike(String userName) {
+		String queryStr;
+		Session session = null;
+		DbQueryStatus dbQueryStatus = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+		try {
 
-		return null;
+			if (StringUtils.isEmpty(userName)) {
+				dbQueryStatus.setMessage("ERROR_GENERIC");
+				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+				return dbQueryStatus;
+			}
+
+			session = ProfileMicroserviceApplication.driver.session();
+			Transaction trans = session.beginTransaction();
+			queryStr = "MATCH return rela;";
+			trans.run(queryStr);
+			trans.success();
+			dbQueryStatus.setMessage("User " + userName + "successfully gets all song liked by friends of " + userName);
+		} catch (Exception ex) {
+			dbQueryStatus.setMessage("ERROR_GENERIC");
+			dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+			ex.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+		return dbQueryStatus;
 	}
 }
