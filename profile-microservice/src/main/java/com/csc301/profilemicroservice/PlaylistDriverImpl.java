@@ -1,11 +1,8 @@
 package com.csc301.profilemicroservice;
 
 import okhttp3.*;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Session;
-import org.neo4j.driver.v1.StatementResult;
 import org.springframework.stereotype.Repository;
 import org.neo4j.driver.v1.Transaction;
 import org.springframework.util.StringUtils;
@@ -28,6 +25,8 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 		}
 	}
 
+	public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+
 	@Override
 	public DbQueryStatus likeSong(String userName, String songId) {
 		String queryStr;
@@ -49,22 +48,23 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 			trans.run(queryStr);
 			trans.success();
 			// communicate with song microservice
-			JSONObject jsonObject = new JSONObject();
-			try {
-				jsonObject.put("shouldDecrement", "false");
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-			MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-			// put your json here
-			RequestBody body = RequestBody.create(JSON, jsonObject.toString());
 			OkHttpClient client = new OkHttpClient();
+			HttpUrl httpUrl = new HttpUrl.Builder()
+					.scheme("http")
+					.host("localhost:3001")
+					.addPathSegment("likeSong")
+					.addPathSegment(songId)
+					.addQueryParameter("shouldDecrement", "false")
+					.build();
+			System.out.println(httpUrl.toString());
+			RequestBody body = RequestBody.create("", JSON);
 			Request request = new Request.Builder()
-					.url("http://localhost:3001/updateSongFavouritesCount/" + songId)
+					.addHeader("accept", "application/json")
+					.url(httpUrl) // <- Finally put httpUrl in here
 					.put(body)
 					.build();
-
 			Response response = client.newCall(request).execute();
+			System.out.println(response);
 			dbQueryStatus.setMessage("User " + userName + "successfully liked the Song");
 		} catch (Exception ex) {
 			dbQueryStatus.setMessage("ERROR_GENERIC");
