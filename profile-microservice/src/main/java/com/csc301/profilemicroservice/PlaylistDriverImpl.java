@@ -41,7 +41,7 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 			String listName = userName + "-favorites";
 			session = ProfileMicroserviceApplication.driver.session();
 			Transaction trans = session.beginTransaction();
-			queryStr = "MATCH (nPlaylist:playlist{plName:'" + listName + "'}),(nSong:song{songID:'" + songId + "'}) " +
+			queryStr = "MATCH (nPlaylist:playlist{plName:'" + listName + "'}),(nSong:song{songId:'" + songId + "'}) " +
 					"CREATE (nPlaylist)-[rela:includes]->(nSong) RETURN rela";
 			trans.run(queryStr);
 			trans.success();
@@ -75,7 +75,7 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 			session = ProfileMicroserviceApplication.driver.session();
 			Transaction trans = session.beginTransaction();
 			queryStr = "MATCH (:playlist{plName:'" + listName + "'})-[rela:includes]->" +
-					"(:song{songID:'" + songId + "'}) DELETE rela";
+					"(:song{songId:'" + songId + "'}) DELETE rela";
 			trans.run(queryStr);
 			trans.success();
 			dbQueryStatus.setMessage("User " + userName + "successfully liked the Song");
