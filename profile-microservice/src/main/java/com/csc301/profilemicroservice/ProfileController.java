@@ -164,7 +164,8 @@ public class ProfileController {
 		response.put("path", String.format("POST %s", Utils.getUrl(request)));
 
 		String songId = params.get("songId");
-		DbQueryStatus dbQueryStatus = playlistDriver.addSong(songId);
+        String songName = params.get("songName");
+		DbQueryStatus dbQueryStatus = playlistDriver.addSong(songId, songName);
 		response = Utils.setResponseStatus(response, dbQueryStatus.getdbQueryExecResult(), dbQueryStatus.getData());
 
 		return response;

@@ -44,7 +44,7 @@ public class SongDalImpl implements SongDal {
 			Request request = new Request.Builder()
 					.addHeader("accept", "application/json")
 					.url("http://localhost:3002/addSong/?songId=" + songId + "&songName=" + songName)
-					.put(body)
+					.post(body)
 					.build();
 			Response response = client.newCall(request).execute();
 			//System.out.println(response);

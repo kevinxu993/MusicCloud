@@ -29,7 +29,7 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 	public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
 	@Override
-	public DbQueryStatus addSong(String songId) {
+	public DbQueryStatus addSong(String songId, String songName) {
 		String queryStr;
 		Session session = null;
 		DbQueryStatus dbQueryStatus = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
@@ -43,7 +43,7 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 
 			session = ProfileMicroserviceApplication.driver.session();
 			Transaction trans = session.beginTransaction();
-			queryStr = "MERGE (:song{songId: '" + songId + "'})";
+			queryStr = "MERGE (:song{songId: '" + songId + "', songName: '" + songName + "'})";
 			trans.run(queryStr);
 			trans.success();
 			dbQueryStatus.setMessage("Song with ID" + songId + "successfully created in neo4j database");
@@ -124,7 +124,17 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 					"(:song{songId:'" + songId + "'}) DELETE rela";
 			trans.run(queryStr);
 			trans.success();
-			dbQueryStatus.setMessage("User " + userName + "successfully liked the Song");
+			// communicate with song microservice
+			OkHttpClient client = new OkHttpClient();
+			RequestBody body = RequestBody.create("", JSON);
+			Request request = new Request.Builder()
+					.addHeader("accept", "application/json")
+					.url("http://localhost:3001/updateSongFavouritesCount/" + songId + "?shouldDecrement=true")
+					.put(body)
+					.build();
+			Response response = client.newCall(request).execute();
+			//System.out.println(response);
+			dbQueryStatus.setMessage("User " + userName + "successfully unliked the Song");
 		} catch (Exception ex) {
 			dbQueryStatus.setMessage("ERROR_GENERIC");
 			dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
