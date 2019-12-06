@@ -74,6 +74,7 @@ public class SongController {
 
     /*
      *    /deleteSongById/{songId} route has one endpoint, DELETE used to delete the song from the MongoDB database
+     * 		 and from all Profiles that have the songId added in their “favourites” list
      * */
 	@RequestMapping(value = "/deleteSongById/{songId}", method = RequestMethod.DELETE)
 	public @ResponseBody Map<String, Object> deleteSongById(@PathVariable("songId") String songId,
@@ -90,7 +91,7 @@ public class SongController {
 
 
     /*
-     *    /addSong route has one endpoint, POST used to add a Song to the Song database
+     *    /addSong route has one endpoint, POST used to add a Song to the Song database and a node in Neo4j database
      * */
 	@RequestMapping(value = "/addSong", method = RequestMethod.POST)
 	public @ResponseBody Map<String, Object> addSong(@RequestParam Map<String, String> params,

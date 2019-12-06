@@ -47,6 +47,11 @@ public class ProfileController {
 		this.playlistDriver = playlistDriver;
 	}
 
+	/*
+	 *    /profile route has one endpoint, POST used to add a profile to the Profile database,
+	 * 		creates userName-favorites
+	 * 		playlist and creates relation (nProfile:profile)-[:created]->(nPlaylist:playlist)
+	 * */
 	@RequestMapping(value = "/profile", method = RequestMethod.POST)
 	public @ResponseBody Map<String, Object> profile(@RequestParam Map<String, String> params,
 			HttpServletRequest request) {
@@ -67,6 +72,10 @@ public class ProfileController {
 		return response;
 	}
 
+	/*
+	 *    /followFriend/{userName}/{friendUserName} route has one endpoint, PUT used to allow
+	 * 		a Profile to follow another Profile and become a friend
+	 * */
 	@RequestMapping(value = "/followFriend/{userName}/{friendUserName}", method = RequestMethod.PUT)
 	public @ResponseBody Map<String, Object> followFriend(@PathVariable("userName") String userName,
 			@PathVariable("friendUserName") String friendUserName, HttpServletRequest request) {
@@ -84,6 +93,10 @@ public class ProfileController {
 		return response;
 	}
 
+	/*
+	 *    /getAllFriendFavouriteSongTitles/{userName} route has one endpoint, GET used to return
+	 * 		the Song names of all of the Songs that the User’s friends have liked
+	 * */
 	@RequestMapping(value = "/getAllFriendFavouriteSongTitles/{userName}", method = RequestMethod.GET)
 	public @ResponseBody Map<String, Object> getAllFriendFavouriteSongTitles(@PathVariable("userName") String userName,
 			HttpServletRequest request) {
@@ -98,6 +111,10 @@ public class ProfileController {
 	}
 
 
+	/*
+	 *    /unfollowFriend/{userName}/{friendUserName} route has one endpoint, PUT used to allow
+	 * 		a Profile to unfollow another Profile and no longer be “friends” with them
+	 * */
 	@RequestMapping(value = "/unfollowFriend/{userName}/{friendUserName}", method = RequestMethod.PUT)
 	public @ResponseBody Map<String, Object> unfollowFriend(@PathVariable("userName") String userName,
 			@PathVariable("friendUserName") String friendUserName, HttpServletRequest request) {
@@ -115,6 +132,10 @@ public class ProfileController {
 		return response;
 	}
 
+	/*
+	 *    /likeSong/{userName}/{songId} route has one endpoint, PUT used to allow
+	 * 		a Profile to like a song and add it to their favourites
+	 * */
 	@RequestMapping(value = "/likeSong/{userName}/{songId}", method = RequestMethod.PUT)
 	public @ResponseBody Map<String, Object> likeSong(@PathVariable("userName") String userName,
 			@PathVariable("songId") String songId, HttpServletRequest request) {
@@ -128,6 +149,10 @@ public class ProfileController {
 		return response;
 	}
 
+	/*
+	 *    /likeSong/{userName}/{songId} route has one endpoint, PUT used to allow
+	 * 		a Profile to unlike a song and remove it from their favourites
+	 * */
 	@RequestMapping(value = "/unlikeSong/{userName}/{songId}", method = RequestMethod.PUT)
 	public @ResponseBody Map<String, Object> unlikeSong(@PathVariable("userName") String userName,
 			@PathVariable("songId") String songId, HttpServletRequest request) {
@@ -141,6 +166,10 @@ public class ProfileController {
 		return response;
 	}
 
+	/*
+	 *    /deleteAllSongsFromDb/{songId} route has one endpoint, PUT used to help delete api in Song microservice to
+	 * 		also delete the song node in Profile microservice
+	 * */
 	@RequestMapping(value = "/deleteAllSongsFromDb/{songId}", method = RequestMethod.PUT)
 	public @ResponseBody Map<String, Object> deleteAllSongsFromDb(@PathVariable("songId") String songId,
 			HttpServletRequest request) {
@@ -159,6 +188,10 @@ public class ProfileController {
 		return response;
 	}
 
+	/*
+	 *    /addSong route has one endpoint, POST used to help addSong api in Song microservice to
+	 * 		also add the song node in Profile microservice
+	 * */
 	@RequestMapping(value = "/addSong", method = RequestMethod.POST)
 	public @ResponseBody Map<String, Object> addSong(@RequestParam Map<String, String> params,
 													 HttpServletRequest request) {
