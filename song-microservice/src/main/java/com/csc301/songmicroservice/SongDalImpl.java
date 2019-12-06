@@ -1,5 +1,6 @@
 package com.csc301.songmicroservice;
 
+import okhttp3.*;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -7,6 +8,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
+
+import java.io.IOException;
 
 @Repository
 public class SongDalImpl implements SongDal {
@@ -17,6 +20,8 @@ public class SongDalImpl implements SongDal {
 	public SongDalImpl(MongoTemplate mongoTemplate) {
 		this.db = mongoTemplate;
 	}
+
+	public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
 	@Override
 	public DbQueryStatus addSong(Song songToAdd) {
@@ -30,8 +35,20 @@ public class SongDalImpl implements SongDal {
 				return dbQueryStatus;
 			}
 			Object obj = db.insert(songToAdd);
+			String songId = songToAdd.getId();
+			String songName = songToAdd.getSongName();
 			dbQueryStatus.setData(obj);
-		} catch (RuntimeException ex) {
+			// communicate with profile microservice
+			OkHttpClient client = new OkHttpClient();
+			RequestBody body = RequestBody.create("", JSON);
+			Request request = new Request.Builder()
+					.addHeader("accept", "application/json")
+					.url("http://localhost:3002/addSong/?songId=" + songId + "&songName=" + songName)
+					.put(body)
+					.build();
+			Response response = client.newCall(request).execute();
+			//System.out.println(response);
+		} catch (RuntimeException | IOException ex) {
 			dbQueryStatus.setMessage("ERROR_GENERIC");
 			dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
 			ex.printStackTrace();
@@ -106,7 +123,17 @@ public class SongDalImpl implements SongDal {
 
 			db.remove(obj);
 //			dbQueryStatus.setData(obj);
-		} catch (RuntimeException ex) {
+			// communicate with profile microservice
+			OkHttpClient client = new OkHttpClient();
+			RequestBody body = RequestBody.create("", JSON);
+			Request request = new Request.Builder()
+					.addHeader("accept", "application/json")
+					.url("http://localhost:3002/deleteAllSongsFromDb/" + songId)
+					.put(body)
+					.build();
+			Response response = client.newCall(request).execute();
+			//System.out.println(response);
+		} catch (RuntimeException | IOException ex) {
 			dbQueryStatus.setMessage("ERROR_GENERIC");
 			dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
 			ex.printStackTrace();
