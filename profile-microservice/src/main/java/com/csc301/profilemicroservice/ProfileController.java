@@ -145,6 +145,14 @@ public class ProfileController {
 		Map<String, Object> response = new HashMap<String, Object>();
 		response.put("path", String.format("PUT %s", Utils.getUrl(request)));
 		
-		return null;
+		DbQueryStatus dbQueryStatus = playlistDriver.deleteSongFromDb(songId);
+
+		if ( ! StringUtils.isEmpty(dbQueryStatus.getMessage())) {
+			response.put("message", dbQueryStatus.getMessage());
+		}
+		
+		response = Utils.setResponseStatus(response, dbQueryStatus.getdbQueryExecResult(), dbQueryStatus.getData());
+
+		return response;
 	}
 }
