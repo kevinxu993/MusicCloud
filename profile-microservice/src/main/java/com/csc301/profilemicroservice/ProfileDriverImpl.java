@@ -2,6 +2,7 @@ package com.csc301.profilemicroservice;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -204,7 +205,54 @@ public class ProfileDriverImpl implements ProfileDriver {
 
 	@Override
 	public DbQueryStatus getAllSongFriendsLike(String userName) {
-			
-		return null;
+		String queryStr;
+		Session session = null;
+		DbQueryStatus dbQueryStatus = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+		try {
+
+			if (StringUtils.isEmpty(userName)) {
+				dbQueryStatus.setMessage("ERROR_GENERIC");
+				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+				return dbQueryStatus;
+			}
+
+			session = ProfileMicroserviceApplication.driver.session();
+			Transaction trans = session.beginTransaction();
+			queryStr = "MATCH (nProfile)-[r:follows]-(mProfile) WHERE nProfile.userName='" + userName + "' return mProfile.userName;";
+//			queryStr = "MATCH (:profile {userName: '" + userName + "'})-[:follows]->(:profile)-[:created]->" +
+//					"(:playlist)-[:includes]->(song) RETURN song.songID as songID;";
+			StatementResult sr = trans.run(queryStr);
+			String frndUserName;
+			String listName;
+			String songName;
+			Map<String, List<String>> data = new HashMap<>(16);
+			List<String> list = null;
+			while (sr.hasNext()) {
+				Record record = sr.next();
+				frndUserName = record.get("mProfile.userName").asString();
+				listName = frndUserName + "-favorites";
+				list = new LinkedList<>();
+				queryStr = "MATCH (mPlaylist)-[r:includes]->(mSong) WHERE mPlaylist.plName='"+ listName +"'  return mSong.songName;";
+				StatementResult songRs = trans.run(queryStr);
+				while (songRs.hasNext()) {
+					songName = songRs.next().get("mSong.songName").asString();
+					list.add(songName);
+				}
+				if (list.size() != 0) {
+					data.put(frndUserName, list);
+				}
+			}
+			trans.success();
+			dbQueryStatus.setData(data);
+		} catch (Exception ex) {
+			dbQueryStatus.setMessage("ERROR_GENERIC");
+			dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+			ex.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+		return dbQueryStatus;
 	}
 }
