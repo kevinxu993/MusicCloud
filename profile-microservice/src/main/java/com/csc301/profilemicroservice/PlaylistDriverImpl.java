@@ -152,25 +152,12 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 
 			session = ProfileMicroserviceApplication.driver.session();
 			Transaction trans = session.beginTransaction();
-
-			// determine songId if it not exists
-			queryStr = "MATCH (mSong:song) WHERE mSong.songId='" + songId +"' return mSong.songId;";
-			StatementResult sr = trans.run(queryStr);
-			if ( ! sr.hasNext()) {
-				dbQueryStatus.setMessage("Song " + songId + " DOES NOT EXIST!");
-				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_NOT_FOUND);
-				return dbQueryStatus;
-			}
-
-			// delete favourite
-			queryStr = "MATCH (mSong:song) WHERE mSong.songId='"+ songId +"'  MATCH (nPlaylist)-[r:includes]->(mSong) DELETE r;";
+			queryStr = "match (:playlist)-[rela:includes]->(nSong:song{songId:'"+ songId + "'}) delete rela, nSong";
 			trans.run(queryStr);
-
-			// delete node
-			queryStr = "MATCH (mSong:song) WHERE mSong.songId='" + songId +"' DELETE mSong;";
+			queryStr = "match (nSong:song{songID:'"+ songId + "'}) delete nSong";
 			trans.run(queryStr);
-
 			trans.success();
+			dbQueryStatus.setMessage("successfully deletes the Song");
 		} catch (Exception ex) {
 			dbQueryStatus.setMessage("ERROR_GENERIC");
 			dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);

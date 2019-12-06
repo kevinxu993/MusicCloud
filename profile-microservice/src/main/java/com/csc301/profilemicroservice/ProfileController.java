@@ -150,7 +150,7 @@ public class ProfileController {
 		if ( ! StringUtils.isEmpty(dbQueryStatus.getMessage())) {
 			response.put("message", dbQueryStatus.getMessage());
 		}
-		
+
 		response = Utils.setResponseStatus(response, dbQueryStatus.getdbQueryExecResult(), dbQueryStatus.getData());
 
 		return response;
