@@ -2,6 +2,7 @@ package com.csc301.profilemicroservice;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -98,12 +99,32 @@ public class ProfileDriverImpl implements ProfileDriver {
 
 			session = ProfileMicroserviceApplication.driver.session();
 			Transaction trans = session.beginTransaction();
-			queryStr = "MATCH (:profile {userName: '" + userName + "'})-[:follows]->(:profile)-[:created]->" +
-					"(:playlist)-[:includes]->(song) RETURN song.songID as songID;";
-			trans.run(queryStr);
+			queryStr = "MATCH (nProfile)-[r:follows]-(mProfile) WHERE nProfile.userName='" + userName + "' return mProfile.userName;";
+//			queryStr = "MATCH (:profile {userName: '" + userName + "'})-[:follows]->(:profile)-[:created]->" +
+//					"(:playlist)-[:includes]->(song) RETURN song.songID as songID;";
+			StatementResult sr = trans.run(queryStr);
+			String frndUserName;
+			String listName;
+			String songName;
+			Map<String, List<String>> data = new HashMap<>(16);
+			List<String> list = null;
+			while (sr.hasNext()) {
+				Record record = sr.next();
+				frndUserName = record.get("mProfile.userName").asString();
+				listName = frndUserName + "-favorites";
+				list = new LinkedList<>();
+				queryStr = "MATCH (mPlaylist)-[r:includes]->(mSong) WHERE mPlaylist.plName='"+ listName +"'  return mSong.songName;";
+				StatementResult songRs = trans.run(queryStr);
+				while (songRs.hasNext()) {
+					songName = songRs.next().get("mSong.songName").asString();
+					list.add(songName);
+				}
+				if (list.size() != 0) {
+					data.put(frndUserName, list);
+				}
+			}
 			trans.success();
-			dbQueryStatus.setMessage("User " + userName + "successfully gets all song liked by friends of " + userName);
-			// dbQueryStatus.setData(obj.getSongName());
+			dbQueryStatus.setData(data);
 		} catch (Exception ex) {
 			dbQueryStatus.setMessage("ERROR_GENERIC");
 			dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
