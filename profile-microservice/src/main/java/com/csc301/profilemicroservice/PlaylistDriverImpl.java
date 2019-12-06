@@ -49,22 +49,15 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 			trans.success();
 			// communicate with song microservice
 			OkHttpClient client = new OkHttpClient();
-			HttpUrl httpUrl = new HttpUrl.Builder()
-					.scheme("http")
-					.host("localhost:3001")
-					.addPathSegment("likeSong")
-					.addPathSegment(songId)
-					.addQueryParameter("shouldDecrement", "false")
-					.build();
-			System.out.println(httpUrl.toString());
 			RequestBody body = RequestBody.create("", JSON);
 			Request request = new Request.Builder()
 					.addHeader("accept", "application/json")
-					.url(httpUrl) // <- Finally put httpUrl in here
+                    // need to check if liked or not!!!!!!!!!!!!!!!!!!!
+					.url("http://localhost:3001/updateSongFavouritesCount/" + songId + "?shouldDecrement=false")
 					.put(body)
 					.build();
 			Response response = client.newCall(request).execute();
-			System.out.println(response);
+			//System.out.println(response);
 			dbQueryStatus.setMessage("User " + userName + "successfully liked the Song");
 		} catch (Exception ex) {
 			dbQueryStatus.setMessage("ERROR_GENERIC");
