@@ -1,5 +1,8 @@
 package com.csc301.profilemicroservice;
 
+import okhttp3.*;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
@@ -45,6 +48,23 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 					"MERGE (nPlaylist)-[rela:includes]->(nSong) RETURN rela";
 			trans.run(queryStr);
 			trans.success();
+			// communicate with song microservice
+			JSONObject jsonObject = new JSONObject();
+			try {
+				jsonObject.put("shouldDecrement", "false");
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+			// put your json here
+			RequestBody body = RequestBody.create(JSON, jsonObject.toString());
+			OkHttpClient client = new OkHttpClient();
+			Request request = new Request.Builder()
+					.url("http://localhost:3001/updateSongFavouritesCount/" + songId)
+					.put(body)
+					.build();
+
+			Response response = client.newCall(request).execute();
 			dbQueryStatus.setMessage("User " + userName + "successfully liked the Song");
 		} catch (Exception ex) {
 			dbQueryStatus.setMessage("ERROR_GENERIC");
