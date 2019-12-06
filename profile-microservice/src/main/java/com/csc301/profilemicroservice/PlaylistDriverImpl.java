@@ -154,7 +154,7 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 			Transaction trans = session.beginTransaction();
 			queryStr = "match (:playlist)-[rela:includes]->(nSong:song{songId:'"+ songId + "'}) delete rela, nSong";
 			trans.run(queryStr);
-			queryStr = "match (nSong:song{songID:'"+ songId + "'}) delete nSong";
+			queryStr = "match (nSong:song{songId:'"+ songId + "'}) delete nSong";
 			trans.run(queryStr);
 			trans.success();
 			dbQueryStatus.setMessage("successfully deletes the Song");
