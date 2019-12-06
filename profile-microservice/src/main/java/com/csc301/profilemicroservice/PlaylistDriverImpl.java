@@ -28,6 +28,38 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 	public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
 	@Override
+	public DbQueryStatus addSong(String songId) {
+		String queryStr;
+		Session session = null;
+		DbQueryStatus dbQueryStatus = new DbQueryStatus("OK", DbQueryExecResult.QUERY_OK);
+		try {
+
+			if (StringUtils.isEmpty(songId)) {
+				dbQueryStatus.setMessage("ERROR_GENERIC");
+				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+				return dbQueryStatus;
+			}
+
+			session = ProfileMicroserviceApplication.driver.session();
+			Transaction trans = session.beginTransaction();
+			queryStr = "MERGE (:song{songId: '" + songId + "'})";
+			trans.run(queryStr);
+			trans.success();
+			dbQueryStatus.setMessage("Song with ID" + songId + "successfully created in neo4j database");
+		} catch (Exception ex) {
+			dbQueryStatus.setMessage("ERROR_GENERIC");
+			dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+			ex.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+		return dbQueryStatus;
+
+	}
+
+	@Override
 	public DbQueryStatus likeSong(String userName, String songId) {
 		String queryStr;
 		Session session = null;
@@ -43,7 +75,7 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 			String listName = userName + "-favorites";
 			session = ProfileMicroserviceApplication.driver.session();
 			Transaction trans = session.beginTransaction();
-			queryStr = "MATCH (nPlaylist:playlist{plName:'" + listName + "'}),(nSong:song{songID:'" + songId + "'}) " +
+			queryStr = "MATCH (nPlaylist:playlist{plName:'" + listName + "'}),(nSong:song{songId:'" + songId + "'}) " +
 					"MERGE (nPlaylist)-[rela:includes]->(nSong) RETURN rela";
 			trans.run(queryStr);
 			trans.success();
@@ -88,7 +120,7 @@ public class PlaylistDriverImpl implements PlaylistDriver {
 			session = ProfileMicroserviceApplication.driver.session();
 			Transaction trans = session.beginTransaction();
 			queryStr = "MATCH (:playlist{plName:'" + listName + "'})-[rela:includes]->" +
-					"(:song{songID:'" + songId + "'}) DELETE rela";
+					"(:song{songId:'" + songId + "'}) DELETE rela";
 			trans.run(queryStr);
 			trans.success();
 			dbQueryStatus.setMessage("User " + userName + "successfully liked the Song");

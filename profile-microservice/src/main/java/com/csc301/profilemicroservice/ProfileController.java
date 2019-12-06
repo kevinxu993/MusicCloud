@@ -147,4 +147,18 @@ public class ProfileController {
 		
 		return null;
 	}
+
+	@RequestMapping(value = "/addSong", method = RequestMethod.POST)
+	public @ResponseBody Map<String, Object> addSong(@RequestParam Map<String, String> params,
+													 HttpServletRequest request) {
+
+		Map<String, Object> response = new HashMap<String, Object>();
+		response.put("path", String.format("POST %s", Utils.getUrl(request)));
+
+		String songId = params.get("songId");
+		DbQueryStatus dbQueryStatus = playlistDriver.addSong(songId);
+		response = Utils.setResponseStatus(response, dbQueryStatus.getdbQueryExecResult(), dbQueryStatus.getData());
+
+		return response;
+	}
 }
