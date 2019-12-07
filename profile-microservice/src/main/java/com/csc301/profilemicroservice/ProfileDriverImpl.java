@@ -102,6 +102,12 @@ public class ProfileDriverImpl implements ProfileDriver {
 				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
 				return dbQueryStatus;
 			}
+			
+			if (userName.equals(frndUserName)) {
+				dbQueryStatus.setMessage("A user can't follow himself or herself!");
+				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+				return dbQueryStatus;
+			}
 
 			session = ProfileMicroserviceApplication.driver.session();
 			Transaction trans = session.beginTransaction();
