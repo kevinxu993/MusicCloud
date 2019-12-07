@@ -144,8 +144,10 @@ public class PlaylistDriverImpl implements PlaylistDriver {
                 Response response = client.newCall(request).execute();
                 //System.out.println(response);
                 dbQueryStatus.setMessage("User " + userName + "successfully unliked the Song");
-            }
-            dbQueryStatus.setMessage("User " + userName + "didn't like the Song");
+            } else {
+				dbQueryStatus.setMessage("ERROR_GENERIC");
+				dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
+			}
 		} catch (Exception ex) {
 			dbQueryStatus.setMessage("ERROR_GENERIC");
 			dbQueryStatus.setdbQueryExecResult(DbQueryExecResult.QUERY_ERROR_GENERIC);
