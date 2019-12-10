@@ -56,3 +56,16 @@ OK
     "checking song DB to see if the favorite counter is incremented for songId 5d620f54d78b833e34e65b47": "Test Passed!"
 }
 totalGrade: 53.0/70.0
+
+---
+
+git usage: 2.0/2.0
+
+- proper git usage
+
+---
+
+code style: 4.0/4.0
+
+- generally ok code style
+- function block comments should follow docstring style guidelines
